@@ -1,2 +1,3 @@
-# facebook-posts-monitor
-WordPress plugin for monitoring your Facebook posts.
+# 페이스북 포스트 모니터 플러그인
+
+페이스북 개인 포스트 목록을 모니터하기 위한 워드프레스 플러그인입니다.

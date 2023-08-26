@@ -1,0 +1,12 @@
+{
+  "name": "changwoo/fbpm",
+  "type": "wordpress-plugin",
+  "autoload": {
+    "files": [
+      "includes/functions.php"
+    ],
+    "classmap": [
+      "includes"
+    ]
+  }
+}
