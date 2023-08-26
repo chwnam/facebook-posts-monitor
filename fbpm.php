@@ -16,5 +16,6 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 const FBPM_MAIN = __FILE__;
+const FBPM_VERSION = '0.0.0';
 
 fbpm();

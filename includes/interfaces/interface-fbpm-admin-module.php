@@ -1,11 +1,7 @@
 <?php
 /**
- * Facebook posts monitor
- * ----------------------
+ * 관리자 모듈 인터페이스.
  *
- * interfaces/interface-fbpm-admin-module.php
- *
- * FBPM_Admin_Module 인터페이스.
  * 플러그인의 모든 관리자측 모듈의 인터페이스.
  */
 
