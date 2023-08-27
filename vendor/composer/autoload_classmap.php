@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'FBPM_Admin_Module' => $baseDir . '/includes/interfaces/interface-fbpm-admin-module.php',
+    'FBPM_Api_Post' => $baseDir . '/includes/ondemand/class-fbpm-api-post.php',
     'FBPM_Auth' => $baseDir . '/includes/admin/class-fbpm-auth.php',
     'FBPM_Container' => $baseDir . '/includes/class-fbpm-container.php',
     'FBPM_Module' => $baseDir . '/includes/interfaces/interface-fbpm-module.php',

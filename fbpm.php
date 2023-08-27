@@ -15,7 +15,15 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-const FBPM_MAIN = __FILE__;
+const FBPM_MAIN    = __FILE__;
 const FBPM_VERSION = '0.0.0';
 
 fbpm();
+
+if ( ! function_exists( 'fbpm_test' ) ) {
+	function fbpm_test(): string {
+		return '<div><pre>' . print_r( fbpm()->api_post->get(), true ) . '</pre></div>';
+	}
+
+	add_shortcode( 'fbpm_test', 'fbpm_test' );
+}

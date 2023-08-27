@@ -7,6 +7,7 @@
 
 if ( ! class_exists( 'FBPM_Container' ) ) {
 	/**
+	 * @property-read FBPM_Api_Post     $api_post
 	 * @property-read FBPM_Auth         $auth
 	 * @property-read FBPM_Options_Page $options_page
 	 * @property-read FBPM_Settings     $settings
@@ -55,7 +56,7 @@ if ( ! class_exists( 'FBPM_Container' ) ) {
 				}
 				return $this->modules[ $module_name ];
 			} elseif ( ! in_array( $module_name, $this->failed_modules, true ) ) {
-				$canon_name = implode( '_', array_map( 'ucfirst', explode( '-', $module_name ) ) );
+				$canon_name = implode( '_', array_map( 'ucfirst', explode( '_', $module_name ) ) );
 				$class_name = "FBPM_" . $canon_name;
 
 				if ( class_exists( $class_name ) && isset( class_implements( $class_name )['FBPM_Module'] ) ) {
@@ -70,7 +71,7 @@ if ( ! class_exists( 'FBPM_Container' ) ) {
 		}
 
 		protected function init_module( string $file_name, bool $ondemand ): void {
-			$module_name = substr( $file_name, 11, - 4 );
+			$module_name = str_replace( '-', '_', substr( $file_name, 11, - 4 ) );
 			$canon_name  = implode( '_', array_map( 'ucfirst', explode( '-', $module_name ) ) );
 			$class_name  = "FBPM_" . $canon_name;
 
@@ -82,14 +83,16 @@ if ( ! class_exists( 'FBPM_Container' ) ) {
 		}
 
 		protected function get_constructor( string $class_name ): Closure {
-			$constructors = array(
-				'FBPM_Auth' => fn() => [
+			return match ( $class_name ) {
+				'FBPM_Api_Post' => fn() => [
+					$this->settings->get_auth(),
+				],
+				'FBPM_Auth'     => fn() => [
 					$this->settings->get_app_id(),
 					$this->settings->get_app_secret(),
 				],
-			);
-
-			return $constructors[ $class_name ] ?? fn() => [];
+				default         => fn() => []
+			};
 		}
 
 		public static function get_instance(): self {
