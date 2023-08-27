@@ -13,4 +13,5 @@ return array(
     'FBPM_Module' => $baseDir . '/includes/interfaces/interface-fbpm-module.php',
     'FBPM_Options_Page' => $baseDir . '/includes/admin/class-fbpm-options-page.php',
     'FBPM_Settings' => $baseDir . '/includes/admin/class-fbpm-settings.php',
+    'FBPM_Webhook' => $baseDir . '/includes/admin/class-fbpm-webhook.php',
 );

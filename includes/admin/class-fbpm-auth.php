@@ -29,8 +29,7 @@ if ( ! class_exists( 'FBPM_Auth' ) ) {
 			return admin_url( 'admin-post.php?action=fbpm-auth-redirect' );
 		}
 
-		#[NoReturn]
-		public function admin_post_authorize(): void {
+		#[NoReturn] public function admin_post_authorize(): void {
 			check_admin_referer( 'fbpm-authorize' );
 
 			$redirect_url = add_query_arg(
@@ -49,8 +48,7 @@ if ( ! class_exists( 'FBPM_Auth' ) ) {
 			exit;
 		}
 
-		#[NoReturn]
-		public function admin_post_auth_redirect(): void {
+		#[NoReturn] public function admin_post_auth_redirect(): void {
 			$state = wp_unslash( $_REQUEST['state'] ?? '' );
 			$code  = wp_unslash( $_REQUEST['code'] ?? '' );
 
@@ -58,10 +56,28 @@ if ( ! class_exists( 'FBPM_Auth' ) ) {
 				wp_die( 'Unexpected response.' );
 			}
 
-			$access_token_data   = $this->request_access_token( $code );
-			$token_detailed_info = $this->debug_access_token( $access_token_data['access_token'] );
+			$access_token_data = $this->request_access_token( $code );
 
-			fbpm()->settings->update_auth( $token_detailed_info );
+			// Check the token.
+			$token_detailed_info = $this->debug_access_token( $access_token_data['access_token'] );
+			if ( ! $token_detailed_info['is_valid'] ) {
+				wp_die( 'Invalid token' );
+			}
+
+			// Convert to long-lived token.
+			$long_lived_token = $this->request_long_lived_token( $access_token_data['access_token'] );
+
+			fbpm()->settings->update_auth(
+				array(
+					'app_id'       => $token_detailed_info['app_id'],
+					'access_token' => $long_lived_token['access_token'],
+					'application'  => $token_detailed_info['application'],
+					'expires_at'   => $long_lived_token['expires_at'],
+					'scopes'       => $token_detailed_info['scopes'],
+					'token_type'   => $long_lived_token['token_type'],
+					'user_id'      => $token_detailed_info['user_id'],
+				)
+			);
 
 			wp_safe_redirect( admin_url( 'options-general.php?page=fbpm' ) );
 			exit;
@@ -142,6 +158,41 @@ if ( ! class_exists( 'FBPM_Auth' ) ) {
 			$decoded = json_decode( $body, true );
 
 			return $decoded['data'] ?? [];
+		}
+
+		/**
+		 * @param string $access_token
+		 *
+		 * @return array{access_token: string, token_type: string, expires_at: int}
+		 */
+		protected function request_long_lived_token( string $access_token ): array {
+			$url = add_query_arg(
+				urlencode_deep(
+					[
+						'grant_type'        => 'fb_exchange_token',
+						'client_id'         => $this->app_id,
+						'client_secret'     => $this->app_secret,
+						'fb_exchange_token' => $access_token,
+					]
+				),
+				'https://graph.facebook.com/v17.0/oauth/access_token'
+			);
+
+			$response    = wp_remote_get( $url );
+			$status_code = wp_remote_retrieve_response_code( $response );
+			$body        = wp_remote_retrieve_body( $response );
+
+			if ( 200 !== $status_code ) {
+				wp_die( 'Long-lived token request failed.' );
+			}
+
+			$decoded = json_decode( $body, true );
+
+			return array(
+				'access_token' => $decoded['access_token'] ?? '',
+				'token_type'   => $decoded['token_type'] ?? '',
+				'expires_at'   => time() + ( $decoded['expires_in'] ?? 0 ),
+			);
 		}
 
 		protected function generate_state(): string {

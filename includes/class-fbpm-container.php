@@ -10,6 +10,7 @@ if ( ! class_exists( 'FBPM_Container' ) ) {
 	 * @property-read FBPM_Auth         $auth
 	 * @property-read FBPM_Options_Page $options_page
 	 * @property-read FBPM_Settings     $settings
+	 * @property-read FBPM_Webhook      $webhook
 	 */
 	final class FBPM_Container {
 		private static ?self $instance = null;

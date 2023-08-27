@@ -18,6 +18,7 @@ class ComposerStaticInit46b346d619701d475195320b6fd789eb
         'FBPM_Module' => __DIR__ . '/../..' . '/includes/interfaces/interface-fbpm-module.php',
         'FBPM_Options_Page' => __DIR__ . '/../..' . '/includes/admin/class-fbpm-options-page.php',
         'FBPM_Settings' => __DIR__ . '/../..' . '/includes/admin/class-fbpm-settings.php',
+        'FBPM_Webhook' => __DIR__ . '/../..' . '/includes/admin/class-fbpm-webhook.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

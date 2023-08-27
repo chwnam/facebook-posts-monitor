@@ -1,0 +1,9 @@
+.list-field {
+    margin-top: 0;
+}
+
+.list-field .label {
+    display: inline-block;
+    font-weight: bold;
+    min-width: 10rem;
+}

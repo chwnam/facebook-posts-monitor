@@ -8,8 +8,20 @@
 if ( ! class_exists( 'FBPM_Options_Page' ) ) {
 	class FBPM_Options_Page implements FBPM_Admin_Module {
 		public function __construct() {
+			add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_style' ) );
 			add_action( 'admin_menu', array( $this, 'admin_menu' ) );
 			add_filter( 'wp_kses_allowed_html', array( $this, 'filter_allowed_html' ), 10, 2 );
+		}
+
+		public function enqueue_style( string $hook ): void {
+			if ( 'settings_page_fbpm' === $hook ) {
+				wp_enqueue_style(
+					'fbpm-admin-options',
+					plugins_url( 'public/css/admin/options.css', FBPM_MAIN ),
+					array(),
+					FBPM_VERSION
+				);
+			}
 		}
 
 		public function admin_menu(): void {
@@ -29,7 +41,9 @@ if ( ! class_exists( 'FBPM_Options_Page' ) ) {
 			fbpm_template(
 				'admin/options',
 				array(
+					'auth'         => fbpm()->settings->get_auth(),
 					'redirect_uri' => fbpm()->auth->get_redirect_uri(),
+					'webhook_url'  => fbpm()->webhook->get_webhook_url(),
 				)
 			);
 		}
@@ -96,7 +110,7 @@ if ( ! class_exists( 'FBPM_Options_Page' ) ) {
 
 			add_settings_section(
 				'fbpm-oauth2',
-				'OAuth2',
+				'자격 증명',
 				function () {
 					echo '<p class="description">' .
 					     '<a href="https://developers.facebook.com/apps/" target="_blank">메타 개발자 페이지</a>' .

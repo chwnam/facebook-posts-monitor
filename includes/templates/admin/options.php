@@ -2,7 +2,20 @@
 /**
  * 옵션 설정 페이지의 템플릿
  *
- * @var array{redirect_uri: string} $args
+ * @var array{
+ *        auth: array{
+ *          app_id: string,
+ *          access_token: string,
+ *          application: string,
+ *          expires_at: int,
+ *          scopes: string[],
+ *          token_type: string,
+ *          user_id: string,
+ *        },
+ *        redirect_uri: string,
+ *        webhook_url: string,
+ *      } $args
+ *
  */
 ?>
 <h1 class="wp-heading-inline">페이스북 포스트 모니터</h1>
@@ -35,10 +48,44 @@
                     </p>
                 </td>
             </tr>
+			<?php if ( $args['auth']['access_token'] ) : ?>
+                <tr>
+                    <th scope="row">인증 결과</th>
+                    <td>
+                        <ul class="list-field auth">
+                            <li>
+                                <span class="label">앱 이름</span>
+								<?php echo esc_html( $args['auth']['application'] ); ?>
+                            </li>
+                            <li>
+                                <span class="label">사용자 ID</span>
+								<?php echo esc_html( $args['auth']['user_id'] ); ?>
+                            </li>
+                            <li>
+                                <span class="label">스코프</span>
+								<?php echo esc_html( implode( ', ', $args['auth']['scopes'] ) ); ?>
+                            </li>
+                            <li>
+                                <span class="label">만료 일시</span>
+								<?php
+								echo esc_html(
+									sprintf(
+										'%s (%s %s)',
+										wp_date( 'Y-m-d H:i:s', $args['auth']['expires_at'], wp_timezone() ),
+										human_time_diff( $args['auth']['expires_at'] ),
+										( $args['auth']['expires_at'] > time() ? '남음' : '지남' )
+									)
+								);
+								?>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+			<?php endif; ?>
             </tbody>
         </table>
         <input type="hidden" name="action" value="fbpm-authorize">
 		<?php wp_nonce_field( 'fbpm-authorize' ); ?>
-        <?php submit_button( '인증하기' ); ?>
+		<?php submit_button( '인증하기' ); ?>
     </form>
 </div>

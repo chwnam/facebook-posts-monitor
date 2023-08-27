@@ -38,7 +38,7 @@ if ( ! class_exists( 'FBPM_Settings' ) ) {
 		}
 
 		public function get_settings(): array {
-			return get_option( 'fbpm_settings' );
+			return get_option( 'fbpm_settings', static::get_default_settings() );
 		}
 
 		public function get_app_id(): string {
@@ -67,19 +67,17 @@ if ( ! class_exists( 'FBPM_Settings' ) ) {
 
 		/**
 		 * @return array{
-		 *      app_id: string,
-		 *      application: string,
-		 *      data_access_expires_at: int,
-		 *      expires_at: int,
-		 *      is_valid: bool,
-		 *      issued_at: int,
-		 *      scopes: string[],
-		 *      type: string,
-		 *      user_id: string,
-		 *  }
+		 *       app_id: string,
+		 *       access_token: string,
+		 *       application: string,
+		 *       expires_at: int,
+		 *       scopes: string[],
+		 *       token_type: string,
+		 *       user_id: string,
+		 *   }
 		 */
 		public function get_auth(): array {
-			return get_option( 'fbpm_auth' );
+			return get_option( 'fbpm_auth', self::get_default_auth() );
 		}
 
 		public function update_auth( array $data ): void {
@@ -113,21 +111,15 @@ if ( ! class_exists( 'FBPM_Settings' ) ) {
 
 			$sanitized['app_id'] = sanitize_text_field( $value['app_id'] ?? $default['app_id'] );
 
-			$sanitized['application'] = sanitize_text_field( $value['application'] ?? $default['application'] );
+			$sanitized['access_token'] = sanitize_text_field( $value['access_token'] ?? $default['access_token'] );
 
-			$sanitized['data_access_expires_at'] = absint(
-				$value['data_access_expires_at'] ?? $default['data_access_expires_at']
-			);
+			$sanitized['application'] = sanitize_text_field( $value['application'] ?? $default['application'] );
 
 			$sanitized['expires_at'] = absint( $value['expires_at'] ?? $default['expires_at'] );
 
-			$sanitized['is_valid'] = boolval( $value['is_valid'] ?? $default['is_valid'] );
-
-			$sanitized['issued_at'] = absint( $value['issued_at'] ?? $default['issued_at'] );
-
 			$sanitized['scopes'] = array_map( 'sanitize_text_field', $value['scopes'] ?? $default['scopes'] );
 
-			$sanitized['type'] = sanitize_text_field( $value['type'] ?? $default['type'] );
+			$sanitized['token_type'] = sanitize_text_field( $value['token_type'] ?? $default['token_type'] );
 
 			$sanitized['user_id'] = sanitize_text_field( $value['user_id'] ?? $default['user_id'] );
 
@@ -144,27 +136,23 @@ if ( ! class_exists( 'FBPM_Settings' ) ) {
 		/**
 		 * @return array{
 		 *      app_id: string,
+		 *      access_token: string,
 		 *      application: string,
-		 *      data_access_expires_at: int,
 		 *      expires_at: int,
-		 *      is_valid: bool,
-		 *      issued_at: int,
 		 *      scopes: string[],
-		 *      type: string,
+		 *      token_type: string,
 		 *      user_id: string,
 		 *  }
 		 */
 		public static function get_default_auth(): array {
 			return array(
-				'app_id'                 => '',
-				'application'            => '',
-				'data_access_expires_at' => 0,
-				'expires_at'             => 0,
-				'is_valid'               => false,
-				'issued_at'              => 0,
-				'scopes'                 => [],
-				'type'                   => '',
-				'user_id'                => '',
+				'app_id'       => '',
+				'access_token' => '',
+				'application'  => '',
+				'expires_at'   => 0,
+				'scopes'       => [],
+				'token_type'   => '',
+				'user_id'      => '',
 			);
 		}
 	}
